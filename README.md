@@ -4,24 +4,17 @@ Personal Claude Code skills for learning and productivity.
 
 ## Setup
 
-Add to your Claude Code settings to make these skills available:
+Symlink each skill into your Claude Code skills directory:
 
 ```bash
-claude mcp add skills -- npx -y @anthropic-ai/claude-code-mcp-skills /path/to/my-skills
+# Clone the repo
+git clone https://github.com/mutdmour/my-skills.git
+
+# Symlink individual skills
+ln -s /path/to/my-skills/quizme ~/.claude/skills/quizme
 ```
 
-Or add directly to `~/.claude/settings.json`:
-
-```json
-{
-  "mcpServers": {
-    "skills": {
-      "command": "npx",
-      "args": ["-y", "@anthropic-ai/claude-code-mcp-skills", "/path/to/my-skills"]
-    }
-  }
-}
-```
+Skills are available immediately in any Claude Code session.
 
 ## Skills
 
