@@ -55,7 +55,38 @@ Read relevant packages, services, and key files to understand:
 
 **Important:** You are building questions about architecture, not about files. Read code to ensure accuracy, but quiz on concepts.
 
-### Step 3: Ask Questions
+### Step 3: Generate Quiz Plan
+
+After reading the code, generate a quiz plan covering all key areas of the topic. Write it to `.claude/quizme-plan.md`. The plan ensures comprehensive coverage and lets the user resume across sessions.
+
+**Plan format:**
+
+```markdown
+# QuizMe: [Topic Name]
+Started: [date]
+
+## Areas to Cover
+
+- [ ] **1. Component Boundaries** -- what each piece owns, where responsibilities split
+- [ ] **2. Data Flow** -- how data moves between layers and components
+- [ ] **3. Design Patterns** -- patterns in use, why they were chosen
+- [ ] **4. Key Terminology** -- correct names for components, services, concepts
+- [ ] **5. Error Handling** -- how failures propagate, recovery strategies
+- [ ] **6. Integration Points** -- how this connects to the rest of the system
+
+## Progress
+<!-- Updated as areas are covered -->
+| Area | Questions Asked | Correct | Notes |
+|------|----------------|---------|-------|
+```
+
+**Plan rules:**
+- Generate 4-8 areas based on actual code complexity. Don't pad with filler.
+- Each area should map to a meaningful concept cluster, not a file.
+- Check off areas once 2+ questions in that area have been answered.
+- If a plan already exists for this topic, read it and resume. Ask: "We have an existing quiz on **X** -- want to continue where you left off, or start fresh?"
+
+### Step 4: Ask Questions
 
 Alternate between two question types:
 
@@ -75,8 +106,18 @@ Alternate between two question types:
 - Never ask about specific line numbers or file paths
 - Increase difficulty gradually -- start with broad architecture, move toward nuanced interactions
 - One question per message. Wait for the answer.
+- Draw questions from uncovered plan areas first. Once an area has 2+ answered questions, check it off and move to the next.
 
-### Step 4: Evaluate Answers
+**Progress indicator:** Include a progress line before each question:
+
+> `[2/6 areas covered]` -- you've nailed component boundaries and data flow. Next up: design patterns.
+
+- Show as `[X/Y areas covered]` where X is checked-off areas and Y is total.
+- Keep it to one line.
+- Include it every question so the user always knows where they stand.
+- When most areas are covered, mention it: "Almost done -- just **Error Handling** left."
+
+### Step 5: Evaluate Answers
 
 **If correct:**
 - Brief acknowledgment ("Right!" or "Exactly.")
@@ -90,7 +131,7 @@ Alternate between two question types:
 
 **Tone:** Helpful guide, not examiner. Frame corrections as "here's what's actually happening" not "you're wrong."
 
-### Step 5: End Session and Scorecard
+### Step 6: End Session and Scorecard
 
 When the user says "stop", "done", "enough", or similar:
 
@@ -116,7 +157,10 @@ Produce a scorecard grouped by concept area:
 - Rate each area: Strong / Decent / Needs Work
 - For weak areas, point to relevant code areas (package/directory level, not specific files)
 - Keep tone encouraging -- highlight strengths alongside gaps
+- Note which plan areas were covered and which remain
 - End with a one-line overall assessment
+
+The quiz plan persists at `.claude/quizme-plan.md` with progress marked -- the user can resume in a future conversation by invoking `/quizme` on the same topic.
 
 ## Key Rules
 
