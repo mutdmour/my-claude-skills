@@ -57,7 +57,7 @@ Read relevant packages, services, and key files to understand:
 
 ### Step 3: Generate Quiz Plan
 
-After reading the code, generate a quiz plan covering all key areas of the topic. Write it to `.claude/quizme-plan.md`. The plan ensures comprehensive coverage and lets the user resume across sessions.
+After reading the code, generate a quiz plan covering all key areas of the topic. Write it to `.claude/quizme/<topic-slug>.md` (e.g., `.claude/quizme/execution-engine.md`). Derive the slug from the topic name -- lowercase, hyphens, no special characters. The plan ensures comprehensive coverage and lets the user resume across sessions.
 
 **Plan format:**
 
@@ -84,7 +84,8 @@ Started: [date]
 - Generate 4-8 areas based on actual code complexity. Don't pad with filler.
 - Each area should map to a meaningful concept cluster, not a file.
 - Check off areas once 2+ questions in that area have been answered.
-- If a plan already exists for this topic, read it and resume. Ask: "We have an existing quiz on **X** -- want to continue where you left off, or start fresh?"
+- If a plan already exists for this topic (check `.claude/quizme/` for matching slug), read it and resume. Ask: "We have an existing quiz on **X** -- want to continue where you left off, or start fresh?"
+- On first invocation, list any existing sessions in `.claude/quizme/` so the user knows what's available.
 
 ### Step 4: Ask Questions
 
@@ -160,7 +161,7 @@ Produce a scorecard grouped by concept area:
 - Note which plan areas were covered and which remain
 - End with a one-line overall assessment
 
-The quiz plan persists at `.claude/quizme-plan.md` with progress marked -- the user can resume in a future conversation by invoking `/quizme` on the same topic.
+The quiz plan persists at `.claude/quizme/<topic-slug>.md` with progress marked -- the user can resume in a future conversation by invoking `/quizme` on the same topic.
 
 ## Key Rules
 

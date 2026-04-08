@@ -68,7 +68,7 @@ Read relevant packages, services, dependencies, and callers. For PRs, also fetch
 
 ### Step 3: Generate Syllabus
 
-After reading the code, generate a syllabus covering all key parts of the topic. Write it to `.claude/teachme-syllabus.md`. The syllabus serves two purposes: ensuring comprehensive coverage, and letting the user resume across sessions.
+After reading the code, generate a syllabus covering all key parts of the topic. Write it to `.claude/teachme/<topic-slug>.md` (e.g., `.claude/teachme/execution-engine.md`). Derive the slug from the topic name -- lowercase, hyphens, no special characters. The syllabus serves two purposes: ensuring comprehensive coverage, and letting the user resume across sessions.
 
 **Syllabus format:**
 
@@ -95,7 +95,8 @@ Started: [date]
 - Each item should be a meaningful learning unit, not a file or class name.
 - Order items top-down: big picture first, details later, gaps/critique last.
 - Check off items as they are covered during the session. Add brief notes about what was discussed.
-- If a syllabus already exists for this topic, read it and resume from where the user left off. Ask: "We have an existing session on **X** -- want to continue where you left off, or start fresh?"
+- If a syllabus already exists for this topic (check `.claude/teachme/` for matching slug), read it and resume from where the user left off. Ask: "We have an existing session on **X** -- want to continue where you left off, or start fresh?"
+- On first invocation, list any existing sessions in `.claude/teachme/` so the user knows what's available.
 
 ### Step 4: Present Big Picture
 
@@ -196,7 +197,7 @@ User questions and redirects always take priority over any planned flow.
 
 ## Session End
 
-No ceremony. When the user stops asking, the session is over. No proactive summary, no scorecard. The syllabus file persists at `.claude/teachme-syllabus.md` with progress marked -- the user can resume in a future conversation by invoking `/teachme` on the same topic.
+No ceremony. When the user stops asking, the session is over. No proactive summary, no scorecard. The syllabus file persists at `.claude/teachme/<topic-slug>.md` with progress marked -- the user can resume in a future conversation by invoking `/teachme` on the same topic.
 
 ## Key Rules
 
@@ -210,4 +211,4 @@ No ceremony. When the user stops asking, the session is over. No proactive summa
 8. **Call out design gaps.** Missing validation, unhandled errors, absent tests, incomplete patterns -- surface these proactively.
 9. **One message at a time.** Present one chunk, offer branches, wait.
 10. **Questions welcome anytime.** User questions always take priority over the planned flow.
-11. **Syllabus tracks coverage.** Generate on session start, persist to `.claude/teachme-syllabus.md`, check off items as covered, nudge when deep. Resume from existing syllabus if one exists for the topic.
+11. **Syllabus tracks coverage.** Generate on session start, persist to `.claude/teachme/<topic-slug>.md`, check off items as covered, nudge when deep. Resume from existing syllabus if one exists for the topic.
