@@ -117,7 +117,19 @@ After each chunk, offer branches like:
 
 Repeat: user picks (or asks a free-form question) -> read more code -> teach chunk -> update syllabus -> offer new branches.
 
-### Step 6: Syllabus Nudges
+### Step 6: Progress Indicator
+
+After each teaching chunk, include a small progress line before the branches:
+
+> `[3/7 covered]` -- you've explored the big picture, core data flow, and error handling so far.
+
+**Progress rules:**
+- Show as `[X/Y covered]` where X is checked-off syllabus items and Y is total.
+- Keep it to one line -- informational, not a celebration.
+- Include it every message so the user always knows where they stand.
+- When most items are covered (e.g., 6/7), mention it: "Almost there -- just **Testing Strategy** left if you want to round it out."
+
+### Step 7: Syllabus Nudges
 
 When the user has gone 3+ exchanges deep into a subtopic, gently suggest returning to the syllabus:
 
