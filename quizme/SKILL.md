@@ -16,24 +16,33 @@ Quiz the user on codebase architecture through interactive Q&A. Infer topic from
 
 ## Process
 
-```dot
-digraph quizme {
-    "Invoked" -> "Topic provided?" [shape=diamond];
-    "Topic provided?" -> "Read relevant code" [label="yes"];
-    "Topic provided?" -> "Infer from context" [label="no"];
-    "Infer from context" -> "State topic, confirm with user";
-    "State topic, confirm with user" -> "Read relevant code";
-    "Read relevant code" -> "Ask question";
-    "Ask question" -> "Evaluate answer";
-    "Evaluate answer" -> "Correct?" [shape=diamond];
-    "Correct?" -> "Acknowledge, ask next question" [label="yes"];
-    "Correct?" -> "Wrong answer flow" [label="no"];
-    "Wrong answer flow" -> "Ask reinforcement follow-up";
-    "Ask reinforcement follow-up" -> "Evaluate answer";
-    "Acknowledge, ask next question" -> "User says stop?" [shape=diamond];
-    "User says stop?" -> "Ask question" [label="no"];
-    "User says stop?" -> "Show scorecard" [label="yes"];
-}
+```
+Invoked
+  |
+  v
+Topic provided? --no--> Infer from context --> Confirm with user
+  |yes                                              |
+  v                                                 v
+Read relevant code <--------------------------------+
+  |
+  v
+Generate quiz plan
+  |
+  v
+Ask question <------------------------------------------+
+  |                                                     |
+  v                                                     |
+Evaluate answer                                         |
+  |                                                     |
+  +--correct--> Acknowledge --> User says stop? --no----+
+  |                                  |yes
+  +--wrong----> Explain why          v
+                  |             Show scorecard
+                  v
+              Reinforcement follow-up
+                  |
+                  v
+              Evaluate again ----correct----> next question
 ```
 
 ### Step 1: Determine Topic

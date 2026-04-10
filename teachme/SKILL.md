@@ -35,8 +35,8 @@ digraph teachme {
     "No argument?" -> "Read relevant code" [label="no"];
     "Infer topic, confirm with user" -> "Read relevant code";
     "Read relevant code" -> "Generate syllabus + write to file";
-    "Generate syllabus + write to file" -> "Present big picture + mermaid diagram";
-    "Present big picture + mermaid diagram" -> "Offer 2-4 branches";
+    "Generate syllabus + write to file" -> "Present big picture + text graph";
+    "Present big picture + text graph" -> "Offer 2-4 branches";
     "Offer 2-4 branches" -> "User picks branch or asks question";
     "User picks branch or asks question" -> "Read more code as needed";
     "Read more code as needed" -> "Teach chunk (2-3 paragraphs)";
@@ -102,7 +102,7 @@ Started: [date]
 
 Always start top-down, regardless of input type. Include:
 - **2-3 paragraphs** explaining what this area is, where it fits, and its key responsibilities
-- **A mermaid diagram** showing key components and their relationships (5-8 nodes max)
+- **A text graph** showing key components and their relationships (5-8 nodes max)
 - **Opinionated observations** -- call out what's notable right away
 
 Check off the "Big Picture" syllabus item. Then offer 2-4 branches to explore deeper.
@@ -146,7 +146,7 @@ When the user has gone 3+ exchanges deep into a subtopic, gently suggest returni
 
 When input is a PR:
 
-1. **Big picture** -- what area this PR touches, why it matters, mermaid diagram of affected components
+1. **Big picture** -- what area this PR touches, why it matters, text graph of affected components
 2. **What changed and why** -- walk through the diff by logical concept (not file-by-file), explaining intent behind each change
 3. **Tradeoffs and alternatives** -- proactively surface: what's strong, what's risky, what alternatives existed, what's missing
 4. Offer branches as normal (explore surrounding architecture, dig into a specific change, examine test coverage, etc.)
@@ -175,7 +175,7 @@ Never let incorrect terminology or understanding pass uncorrected. Corrections a
 
 ## Diagrams
 
-**Big picture = always include a mermaid diagram.** When first presenting an area's architecture, include a simple mermaid diagram (5-8 nodes max) showing key components and relationships. This anchors the mental model.
+**Big picture = always include a text graph.** When first presenting an area's architecture, include a simple text graph (5-8 nodes max) showing key components and relationships. This anchors the mental model.
 
 **Deeper dives = prose only.** Once past the big picture, use prose with real names. Only produce additional diagrams if the user asks or if the data flow is genuinely too complex for prose.
 
@@ -206,7 +206,7 @@ No ceremony. When the user stops asking, the session is over. No proactive summa
 3. **2-3 paragraphs max per chunk.** Then pause with branches. Never monologue.
 4. **Real names, no code dumps.** Reference actual classes/methods/packages inline. Only show code blocks when asked.
 5. **Be opinionated.** Call out strengths, weaknesses, gaps, and unusual patterns. Don't be neutral.
-6. **Mermaid diagram for big picture.** Always include one when first presenting an area. Keep it simple (5-8 nodes).
+6. **Text graph for big picture.** Always include one when first presenting an area. Keep it simple (5-8 nodes).
 7. **Correct misconceptions immediately.** Never let incorrect understanding pass. Frame corrections as teaching moments.
 8. **Call out design gaps.** Missing validation, unhandled errors, absent tests, incomplete patterns -- surface these proactively.
 9. **One message at a time.** Present one chunk, offer branches, wait.
