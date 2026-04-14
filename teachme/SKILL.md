@@ -183,6 +183,26 @@ Never let incorrect terminology or understanding pass uncorrected. Corrections a
 
 Use real class names, method names, and package names inline. Don't dump code blocks unless the user explicitly asks ("show me the code", "let me see that method"). Example good reference: "The `ExecutionService.run()` method orchestrates this -- it creates a `WorkflowExecute` instance, passes it the node graph, and hooks into its events."
 
+## Concrete Over Abstract
+
+Explanations should answer "who does what, and where" — not just "what happens." Two specific rules:
+
+1. **Label ownership at boundaries.** When code crosses between project code, frameworks, and external APIs, show the chain with ownership at each stage. Don't say "the schema gets sanitized" — say "n8n's `sanitizeInputSchema` flattens the union before Mastra's `schema-compat` converts it to JSON Schema for Anthropic." The user's first question at any boundary is "whose code is this?" — answer it before they ask.
+
+2. **Name the actor, not just the action.** Don't say "input is validated" — say "`credentialService.list` is called with the filtered type." Don't say "this gets cached" — say "Mastra caches the tool schema at construction time in `createTool()`." Specificity prevents follow-up questions and builds a mental model the user can navigate on their own.
+
+When a cross-boundary flow first comes up, use a short pipeline diagram with ownership labels:
+
+```
+project code (Zod schema)
+    ↓
+project code (sanitization shim)
+    ↓
+framework (Mastra converts Zod → JSON Schema)
+    ↓
+external API (Anthropic receives JSON Schema)
+```
+
 ## Handling User Input Mid-Session
 
 At any point the user can:
