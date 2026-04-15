@@ -34,7 +34,9 @@ digraph teachme {
     "No argument?" -> "Infer topic, confirm with user" [label="yes"];
     "No argument?" -> "Read relevant code" [label="no"];
     "Infer topic, confirm with user" -> "Read relevant code";
-    "Read relevant code" -> "Generate syllabus + write to file";
+    "Read relevant code" -> "Ask focus areas + depth";
+    "Ask focus areas + depth" -> "User responds";
+    "User responds" -> "Generate syllabus + write to file";
     "Generate syllabus + write to file" -> "Present big picture + text graph";
     "Present big picture + text graph" -> "Offer 2-4 branches";
     "Offer 2-4 branches" -> "User picks branch or asks question";
@@ -66,6 +68,36 @@ Read relevant packages, services, dependencies, and callers. For PRs, also fetch
 - Design patterns in use
 - Gaps in the design (missing validation, error handling, tests, etc.)
 
+### Step 2.5: Ask Focus Areas and Depth
+
+After reading the code, before generating the syllabus, ask the user what they want to focus on and how deep they want to go. Present this as a single combined question.
+
+Based on your code reading, surface 4-6 meaningful focus area suggestions specific to the topic -- not generic categories, but real areas you found in the code.
+
+Example prompt (adapt to the actual topic):
+
+> Before I build your syllabus, two quick questions:
+>
+> **What areas do you want to focus on?** (pick one or more, or say "all")
+> - **A) Core execution flow** -- how workflows run end-to-end
+> - **B) Error handling & recovery** -- failure modes and what's missing
+> - **C) Node runner architecture** -- how individual nodes are dispatched
+> - **D) Trigger integration** -- how executions get initiated from outside
+> - **E) Testing coverage** -- what's tested, what's not
+>
+> **How deep do you want to go?**
+> - **1) Survey** -- big picture only, key concepts, how it fits in (~15 min)
+> - **2) Standard** -- balanced breadth and depth, main patterns and flows
+> - **3) Deep dive** -- internals, edge cases, design gaps, full coverage
+
+Wait for the user's response before generating the syllabus.
+
+**Scoping rules based on response:**
+- **Focus areas:** Restrict syllabus items to chosen areas unless the user says "all". If the user picks a subset, drop or deprioritize unrelated items.
+- **Survey depth:** 3-5 high-level items. Each broad. No internals, no gaps/critique unless explicitly chosen.
+- **Standard depth:** 5-7 items. Mix of overview and key patterns. Include one gap/critique item if relevant.
+- **Deep dive depth:** 7-10 items. Include internals, edge cases, design gaps, and testing strategy. Nothing skipped.
+
 ### Step 3: Generate Syllabus
 
 After reading the code, generate a syllabus covering all key parts of the topic. Write it to `.claude/teachme/<topic-slug>.md` (e.g., `.claude/teachme/execution-engine.md`). Derive the slug from the topic name -- lowercase, hyphens, no special characters. The syllabus serves two purposes: ensuring comprehensive coverage, and letting the user resume across sessions.
@@ -75,6 +107,8 @@ After reading the code, generate a syllabus covering all key parts of the topic.
 ```markdown
 # TeachMe: [Topic Name]
 Started: [date]
+Focus: [chosen areas, e.g. "Core execution flow, Error handling" or "All"]
+Depth: [Survey / Standard / Deep dive]
 
 ## Syllabus
 
@@ -91,11 +125,12 @@ Started: [date]
 ```
 
 **Syllabus rules:**
-- Generate 5-10 items based on actual code complexity. Don't pad with filler.
+- Scope items to the chosen focus areas and depth level from Step 2.5.
+- Generate 3-5 items for Survey, 5-7 for Standard, 7-10 for Deep dive. Don't pad with filler.
 - Each item should be a meaningful learning unit, not a file or class name.
 - Order items top-down: big picture first, details later, gaps/critique last.
 - Check off items as they are covered during the session. Add brief notes about what was discussed.
-- If a syllabus already exists for this topic (check `.claude/teachme/` for matching slug), read it and resume from where the user left off. Ask: "We have an existing session on **X** -- want to continue where you left off, or start fresh?"
+- If a syllabus already exists for this topic (check `.claude/teachme/` for matching slug), read it and resume from where the user left off. Ask: "We have an existing session on **X** (focus: [X], depth: [Y]) -- want to continue where you left off, or start fresh with different focus/depth?"
 - On first invocation, list any existing sessions in `.claude/teachme/` so the user knows what's available.
 
 ### Step 4: Present Big Picture
@@ -223,13 +258,14 @@ No ceremony. When the user stops asking, the session is over. No proactive summa
 ## Key Rules
 
 1. **Always read actual code** before teaching. Never invent architecture or guess at implementations.
-2. **Top-down always.** Even for a specific file, start with where it fits before explaining what it does.
-3. **2-3 paragraphs max per chunk.** Then pause with branches. Never monologue.
-4. **Real names, no code dumps.** Reference actual classes/methods/packages inline. Only show code blocks when asked.
-5. **Be opinionated.** Call out strengths, weaknesses, gaps, and unusual patterns. Don't be neutral.
-6. **Text graph for big picture.** Always include one when first presenting an area. Keep it simple (5-8 nodes).
-7. **Correct misconceptions immediately.** Never let incorrect understanding pass. Frame corrections as teaching moments.
-8. **Call out design gaps.** Missing validation, unhandled errors, absent tests, incomplete patterns -- surface these proactively.
-9. **One message at a time.** Present one chunk, offer branches, wait.
-10. **Questions welcome anytime.** User questions always take priority over the planned flow.
-11. **Syllabus tracks coverage.** Generate on session start, persist to `.claude/teachme/<topic-slug>.md`, check off items as covered, nudge when deep. Resume from existing syllabus if one exists for the topic.
+2. **Ask focus and depth before generating the syllabus.** Step 2.5 is mandatory -- don't skip straight to a generic syllabus. Suggestions must come from what you actually found in the code.
+3. **Top-down always.** Even for a specific file, start with where it fits before explaining what it does.
+4. **2-3 paragraphs max per chunk.** Then pause with branches. Never monologue.
+5. **Real names, no code dumps.** Reference actual classes/methods/packages inline. Only show code blocks when asked.
+6. **Be opinionated.** Call out strengths, weaknesses, gaps, and unusual patterns. Don't be neutral.
+7. **Text graph for big picture.** Always include one when first presenting an area. Keep it simple (5-8 nodes).
+8. **Correct misconceptions immediately.** Never let incorrect understanding pass. Frame corrections as teaching moments.
+9. **Call out design gaps.** Missing validation, unhandled errors, absent tests, incomplete patterns -- surface these proactively.
+10. **One message at a time.** Present one chunk, offer branches, wait.
+11. **Questions welcome anytime.** User questions always take priority over the planned flow.
+12. **Syllabus tracks coverage.** Generate on session start (scoped to focus/depth), persist to `.claude/teachme/<topic-slug>.md`, check off items as covered, nudge when deep. Resume from existing syllabus if one exists for the topic.
