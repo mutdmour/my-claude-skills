@@ -146,10 +146,11 @@ When the user has gone 3+ exchanges deep into a subtopic, gently suggest returni
 
 When input is a PR:
 
-1. **Big picture** -- what area this PR touches, why it matters, text graph of affected components
-2. **What changed and why** -- walk through the diff by logical concept (not file-by-file), explaining intent behind each change
-3. **Tradeoffs and alternatives** -- proactively surface: what's strong, what's risky, what alternatives existed, what's missing
-4. Offer branches as normal (explore surrounding architecture, dig into a specific change, examine test coverage, etc.)
+1. **Checkout the PR branch** -- After fetching PR info via `gh pr view`, ask the user: "Want me to check out the PR branch **`<branch-name>`** locally so we can explore the actual code?" If they confirm, run `gh pr checkout <number>`. If they decline, continue using the diff only.
+2. **Big picture** -- what area this PR touches, why it matters, text graph of affected components
+3. **What changed and why** -- walk through the diff by logical concept (not file-by-file), explaining intent behind each change
+4. **Tradeoffs and alternatives** -- proactively surface: what's strong, what's risky, what alternatives existed, what's missing
+5. Offer branches as normal (explore surrounding architecture, dig into a specific change, examine test coverage, etc.)
 
 ## Opinionated Guidance
 

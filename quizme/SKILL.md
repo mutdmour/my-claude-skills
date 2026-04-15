@@ -13,6 +13,7 @@ Quiz the user on codebase architecture through interactive Q&A. Infer topic from
 
 - `/quizme` -- infer topic from current branch, recent conversation, or files touched
 - `/quizme <topic>` -- quiz on an explicit topic
+- `/quizme <PR>` -- e.g., `/quizme #4521` or a GitHub PR URL
 
 ## Process
 
@@ -52,7 +53,12 @@ If no topic argument provided:
 2. State what you think the user is working on: "It looks like you're working on **X**. Want me to quiz you on that?"
 3. Wait for confirmation before proceeding
 
-If topic argument provided, proceed directly.
+If topic argument is a PR (`#number` or GitHub URL):
+1. Fetch PR info via `gh pr view` and `gh pr diff`
+2. Ask the user: "Want me to check out the PR branch **`<branch-name>`** locally so we can explore the actual code?" If they confirm, run `gh pr checkout <number>`. If they decline, continue using the diff only.
+3. Build quiz questions around the area the PR touches -- architecture, patterns, and design decisions in that area.
+
+If topic argument provided (not a PR), proceed directly.
 
 ### Step 2: Read the Code
 
