@@ -135,10 +135,25 @@ Depth: [Survey / Standard / Deep dive]
 
 ### Step 4: Present Big Picture
 
-Always start top-down, regardless of input type. Include:
-- **2-3 paragraphs** explaining what this area is, where it fits, and its key responsibilities
-- **A text graph** showing key components and their relationships (5-8 nodes max)
-- **Opinionated observations** -- call out what's notable right away
+Always start top-down, regardless of input type. Present in this order:
+
+1. **A concrete example or flow first.** Before any abstract description, ground the user in something real. Pick the most representative scenario for this area (e.g., "what happens when a webhook fires", "what a full workflow execution looks like end to end") and walk through it as a short linear flow -- who calls what, in what order, with real class/method names. Keep it to 5-8 steps. This is not a diagram yet; it's a narrative trace.
+
+   Example format:
+   ```
+   1. Webhook arrives → WebhookController.handleRequest()
+   2. Looks up workflow by path → WorkflowRepository.findByWebhookPath()
+   3. Creates execution record → ExecutionRepository.create()
+   4. Hands off to ExecutionService.run()
+   5. ExecutionService builds the node graph and starts WorkflowExecute
+   6. Results written back, webhook response returned
+   ```
+
+2. **A text graph** showing key components and their relationships (5-8 nodes max). This anchors the structural mental model after the user has seen the flow.
+
+3. **1-2 paragraphs** explaining what this area is, where it fits, and its key responsibilities. Keep it brief -- the flow and graph already did the heavy lifting.
+
+4. **Opinionated observations** -- call out what's notable right away (strengths, gaps, unusual patterns).
 
 Check off the "Big Picture" syllabus item. Then offer 2-4 branches to explore deeper.
 
@@ -211,7 +226,9 @@ Never let incorrect terminology or understanding pass uncorrected. Corrections a
 
 ## Diagrams
 
-**Big picture = always include a text graph.** When first presenting an area's architecture, include a simple text graph (5-8 nodes max) showing key components and relationships. This anchors the mental model.
+**Opening sequence = example flow first, then graph.** When first presenting any area, the order is always: (1) a concrete example walkthrough, (2) a text graph of components, (3) prose explanation. Never lead with abstract description.
+
+**Big picture = always include a text graph.** After the example flow, include a simple text graph (5-8 nodes max) showing key components and relationships.
 
 **Deeper dives = prose only.** Once past the big picture, use prose with real names. Only produce additional diagrams if the user asks or if the data flow is genuinely too complex for prose.
 
@@ -259,13 +276,14 @@ No ceremony. When the user stops asking, the session is over. No proactive summa
 
 1. **Always read actual code** before teaching. Never invent architecture or guess at implementations.
 2. **Ask focus and depth before generating the syllabus.** Step 2.5 is mandatory -- don't skip straight to a generic syllabus. Suggestions must come from what you actually found in the code.
-3. **Top-down always.** Even for a specific file, start with where it fits before explaining what it does.
-4. **2-3 paragraphs max per chunk.** Then pause with branches. Never monologue.
-5. **Real names, no code dumps.** Reference actual classes/methods/packages inline. Only show code blocks when asked.
-6. **Be opinionated.** Call out strengths, weaknesses, gaps, and unusual patterns. Don't be neutral.
-7. **Text graph for big picture.** Always include one when first presenting an area. Keep it simple (5-8 nodes).
-8. **Correct misconceptions immediately.** Never let incorrect understanding pass. Frame corrections as teaching moments.
-9. **Call out design gaps.** Missing validation, unhandled errors, absent tests, incomplete patterns -- surface these proactively.
-10. **One message at a time.** Present one chunk, offer branches, wait.
-11. **Questions welcome anytime.** User questions always take priority over the planned flow.
-12. **Syllabus tracks coverage.** Generate on session start (scoped to focus/depth), persist to `.claude/teachme/<topic-slug>.md`, check off items as covered, nudge when deep. Resume from existing syllabus if one exists for the topic.
+3. **Example or flow before explanation.** Always open with a concrete scenario walkthrough (real class/method names, 5-8 steps), then the architecture graph, then prose. Never start with abstract description.
+4. **Top-down always.** Even for a specific file, start with where it fits before explaining what it does.
+5. **2-3 paragraphs max per chunk.** Then pause with branches. Never monologue.
+6. **Real names, no code dumps.** Reference actual classes/methods/packages inline. Only show code blocks when asked.
+7. **Be opinionated.** Call out strengths, weaknesses, gaps, and unusual patterns. Don't be neutral.
+8. **Text graph for big picture.** Always include one when first presenting an area. Keep it simple (5-8 nodes).
+9. **Correct misconceptions immediately.** Never let incorrect understanding pass. Frame corrections as teaching moments.
+10. **Call out design gaps.** Missing validation, unhandled errors, absent tests, incomplete patterns -- surface these proactively.
+11. **One message at a time.** Present one chunk, offer branches, wait.
+12. **Questions welcome anytime.** User questions always take priority over the planned flow.
+13. **Syllabus tracks coverage.** Generate on session start (scoped to focus/depth), persist to `.claude/teachme/<topic-slug>.md`, check off items as covered, nudge when deep. Resume from existing syllabus if one exists for the topic.
