@@ -102,6 +102,8 @@ Wait for the user's response before generating the syllabus.
 
 After reading the code, generate a syllabus covering all key parts of the topic. Write it to `.claude/teachme/<topic-slug>.md` (e.g., `.claude/teachme/execution-engine.md`). Derive the slug from the topic name -- lowercase, hyphens, no special characters. The syllabus serves two purposes: ensuring comprehensive coverage, and letting the user resume across sessions.
 
+Also create a companion notes document at `.claude/teachme/<topic-slug>-notes.md`. This is a running knowledge base that accumulates everything taught across the session -- updated after every teaching chunk, not just at the end.
+
 **Syllabus format:**
 
 ```markdown
@@ -113,20 +115,69 @@ Depth: [Survey / Standard / Deep dive]
 ## Syllabus
 
 - [ ] **1. Big Picture** -- architecture overview, where it fits, key components
+  - [ ] 1.1 Where it fits in the system
+  - [ ] 1.2 Key components and their roles
+  - [ ] 1.3 Main entry points
 - [ ] **2. Core Data Flow** -- how data moves through the system
+  - [ ] 2.1 Input ingestion and normalization
+  - [ ] 2.2 Transformation steps
+  - [ ] 2.3 Output and side effects
 - [ ] **3. Key Component: X** -- responsibilities, patterns, dependencies
-- [ ] **4. Key Component: Y** -- responsibilities, patterns, dependencies
-- [ ] **5. Error Handling & Edge Cases** -- recovery paths, failure modes
-- [ ] **6. Design Gaps & Weaknesses** -- what's missing, what's fragile
-- [ ] **7. Testing Strategy** -- what's covered, what's not
+  - [ ] 3.1 Responsibility and contract
+  - [ ] 3.2 Internal structure
+  - [ ] 3.3 Dependencies and callers
+- [ ] **4. Error Handling & Edge Cases** -- recovery paths, failure modes
+  - [ ] 4.1 Handled error paths
+  - [ ] 4.2 Unhandled or silent failures
+- [ ] **5. Design Gaps & Weaknesses** -- what's missing, what's fragile
+  - [ ] 5.1 Missing validation or constraints
+  - [ ] 5.2 Fragile coupling or assumptions
+- [ ] **6. Testing Strategy** -- what's covered, what's not
+  - [ ] 6.1 Current coverage
+  - [ ] 6.2 Gaps and risky untested paths
 
 ## Progress Notes
 <!-- Updated as topics are covered -->
 ```
 
+**Notes document format** (`.claude/teachme/<topic-slug>-notes.md`):
+
+```markdown
+# TeachMe Notes: [Topic Name]
+Started: [date]
+Focus: [chosen areas]
+Depth: [Survey / Standard / Deep dive]
+
+---
+
+## [Section Title]
+*Covered: [date]*
+
+[2-4 paragraphs summarizing what was taught -- key concepts, real class/method names, how things connect. Written as reference material, not a transcript. Include any design gaps or strengths called out.]
+
+### Key facts
+- [Bullet of a concrete, memorable fact or relationship]
+- [Bullet of a concrete, memorable fact or relationship]
+
+---
+
+## [Next Section Title]
+...
+```
+
+**Notes document rules:**
+- Create the notes file when the session starts (alongside the syllabus).
+- After each teaching chunk, append a new section (or update the current one if still within the same syllabus item) with what was just covered.
+- Write the notes as reference material -- dense, specific, usable for future review. Not a summary of the conversation, but a record of the knowledge itself. Use real names, real relationships, real code paths.
+- Include design gaps, weaknesses, and notable patterns under the relevant section -- don't save these only for a critique section.
+- Never truncate or overwrite prior sections. Each section accumulates; the document only grows.
+- If a notes file already exists for this topic, read it on resume and continue appending. Do not reset it on a fresh start -- instead, add a separator with the new session date.
+
 **Syllabus rules:**
 - Scope items to the chosen focus areas and depth level from Step 2.5.
-- Generate 3-5 items for Survey, 5-7 for Standard, 7-10 for Deep dive. Don't pad with filler.
+- Generate 3-5 top-level items for Survey, 5-7 for Standard, 7-10 for Deep dive. Don't pad with filler.
+- Every top-level item must have 2-4 subsections. Subsections should reflect what you actually found in the code -- real concerns, real sub-flows, real components. Don't use generic filler subsection names.
+- Check off subsections individually as they are covered, not just the parent item. A parent item is complete only when all its subsections are checked.
 - Each item should be a meaningful learning unit, not a file or class name.
 - Order items top-down: big picture first, details later, gaps/critique last.
 - Check off items as they are covered during the session. Add brief notes about what was discussed.
@@ -159,12 +210,20 @@ Check off the "Big Picture" syllabus item. Then offer 2-4 branches to explore de
 
 ### Step 5: Interactive Exploration
 
-After each chunk, offer branches like:
+After each chunk, offer branches. Every followup **must** include two fixed options in addition to the topic-specific branches:
 
 > Want to explore:
 > - **A) How `ExecutionService` delegates to node runners** -- this is where the complexity lives
 > - **B) The error handling strategy** -- there's a gap here, no recovery path for partial failures
 > - **C) What calls this service** -- the controller layer above
+> - **D) Go deeper here** -- stay in this area and expand on what we just covered
+> - **E) Quiz me** -- test my understanding of what we've covered so far (`/quizme`)
+
+**Fixed option rules:**
+- "Go deeper here" always appears. When chosen, expand on the current topic: reveal internals, edge cases, or nuances not yet covered. Don't simply repeat what was just said.
+- "Quiz me" always appears. When chosen, invoke `/quizme` focused on the topics covered so far in this session. Pass the syllabus file path and covered items as context so quizme can target its questions appropriately.
+- Topic-specific branches come first (A, B, C...), then "Go deeper" and "Quiz me" always close out the list.
+- Adjust letter labels so "Go deeper" and "Quiz me" are always the last two options regardless of how many topic branches precede them.
 
 Repeat: user picks (or asks a free-form question) -> read more code -> teach chunk -> update syllabus -> offer new branches.
 
@@ -175,10 +234,12 @@ After each teaching chunk, include a small progress line before the branches:
 > `[3/7 covered]` -- you've explored the big picture, core data flow, and error handling so far.
 
 **Progress rules:**
-- Show as `[X/Y covered]` where X is checked-off syllabus items and Y is total.
+- Show as `[X/Y covered]` where X is checked-off top-level syllabus items and Y is total top-level items.
 - Keep it to one line -- informational, not a celebration.
 - Include it every message so the user always knows where they stand.
 - When most items are covered (e.g., 6/7), mention it: "Almost there -- just **Testing Strategy** left if you want to round it out."
+- Check off subsections individually as they're covered. Only mark the parent item complete when all its subsections are done.
+- After updating the syllabus, also append to the notes document with what was just covered.
 
 ### Step 7: Syllabus Nudges
 
@@ -285,5 +346,7 @@ No ceremony. When the user stops asking, the session is over. No proactive summa
 9. **Correct misconceptions immediately.** Never let incorrect understanding pass. Frame corrections as teaching moments.
 10. **Call out design gaps.** Missing validation, unhandled errors, absent tests, incomplete patterns -- surface these proactively.
 11. **One message at a time.** Present one chunk, offer branches, wait.
-12. **Questions welcome anytime.** User questions always take priority over the planned flow.
+12. **Always offer "Go deeper" and "Quiz me".** Every branch list ends with these two options, no exceptions. "Go deeper" expands the current topic; "Quiz me" invokes `/quizme` on covered material.
+13. **Update notes after every chunk.** After each teaching chunk, append to `.claude/teachme/<topic-slug>-notes.md`. Write reference material -- specific, dense, real names. Never truncate prior sections.
+14. **Questions welcome anytime.** User questions always take priority over the planned flow.
 13. **Syllabus tracks coverage.** Generate on session start (scoped to focus/depth), persist to `.claude/teachme/<topic-slug>.md`, check off items as covered, nudge when deep. Resume from existing syllabus if one exists for the topic.
