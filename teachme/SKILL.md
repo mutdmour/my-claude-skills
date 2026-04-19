@@ -297,11 +297,11 @@ Always correct incorrect terminology or understanding immediately. Corrections a
 
 ## Diagrams
 
-**Opening sequence = example flow first, then graph.** When first presenting any area, the order is always: (1) a concrete example walkthrough, (2) a text graph of components, (3) prose explanation. Always lead with something concrete and real.
+**Opening sequence = example flow, then graph, then prose.** When first presenting any area, the order is always: (1) a concrete example walkthrough, (2) a text graph of components, (3) prose explanation. Always lead with something concrete and visual.
 
 **Big picture = always include a text graph.** After the example flow, include a simple text graph (5-8 nodes max) showing key components and relationships.
 
-**Deeper dives = prose only.** Once past the big picture, use prose with real names. Only produce additional diagrams if the user asks or if the data flow is genuinely too complex for prose.
+**Deeper dives = diagram then prose.** After the big picture, each teaching chunk should lead with a diagram -- a flow, decision tree, or component map that orients the user before the explanation. Follow the diagram with prose that fills in the why and the nuance. Keep diagrams simple: ASCII box-and-arrow style, 5-10 nodes max. Omit the diagram only if the chunk covers a concept that is purely conceptual with no meaningful structure to visualize (e.g., a single design tradeoff or a naming convention).
 
 ## Code References
 
@@ -352,7 +352,7 @@ No ceremony. When the user stops asking, the session is over. No proactive summa
 5. **2-3 paragraphs max per chunk.** Then pause with branches. One chunk, one message.
 6. **Match code detail to chosen abstraction level.** Conceptual = no specific names; Named = real class/method/package names inline, code blocks only when asked; Code-level = real names plus proactive snippets when they add clarity.
 7. **Be opinionated.** Call out strengths, weaknesses, gaps, and unusual patterns. Take a stance.
-8. **Text graph for big picture.** Always include one when first presenting an area. Keep it simple (5-8 nodes).
+8. **Diagram every chunk.** Always include a text graph for the big picture. For deeper dives, include a diagram (flow, decision tree, or component map) after the prose in each chunk. Keep diagrams simple -- ASCII, 5-10 nodes max.
 9. **Correct misconceptions immediately.** Always address incorrect understanding on the spot. Frame corrections as teaching moments.
 10. **Call out design gaps.** Missing validation, unhandled errors, absent tests, incomplete patterns -- surface these proactively.
 11. **One message at a time.** Present one chunk, offer branches, wait.
