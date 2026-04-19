@@ -94,7 +94,7 @@ Wait for the user's response before generating the syllabus.
 
 **Scoping rules based on response:**
 - **Focus areas:** Restrict syllabus items to chosen areas unless the user says "all". If the user picks a subset, drop or deprioritize unrelated items.
-- **Survey depth:** 3-5 high-level items. Each broad. No internals, no gaps/critique unless explicitly chosen.
+- **Survey depth:** 3-5 high-level items. Each broad. Cover only high-level concepts; include internals and gaps/critique only when explicitly chosen.
 - **Standard depth:** 5-7 items. Mix of overview and key patterns. Include one gap/critique item if relevant.
 - **Deep dive depth:** 7-10 items. Include internals, edge cases, design gaps, and testing strategy. Nothing skipped.
 
@@ -167,16 +167,16 @@ Depth: [Survey / Standard / Deep dive]
 
 **Notes document rules:**
 - Create the notes file when the session starts (alongside the syllabus).
-- After each teaching chunk, append a new section (or update the current one if still within the same syllabus item) with what was just covered.
-- Write the notes as reference material -- dense, specific, usable for future review. Not a summary of the conversation, but a record of the knowledge itself. Use real names, real relationships, real code paths.
-- Include design gaps, weaknesses, and notable patterns under the relevant section -- don't save these only for a critique section.
-- Never truncate or overwrite prior sections. Each section accumulates; the document only grows.
-- If a notes file already exists for this topic, read it on resume and continue appending. Do not reset it on a fresh start -- instead, add a separator with the new session date.
+- Write to the notes document when moving on to the next top-level syllabus section (or at session end). This ensures all follow-up questions, "go deeper" exchanges, and tangents within a section are captured together in one complete entry.
+- Write the notes as reference material -- dense, specific, usable for future review. A record of the knowledge itself: real names, real relationships, real code paths. Include everything covered during the section: the initial chunk, any deeper dives, and answers to follow-up questions.
+- Include design gaps, weaknesses, and notable patterns inline under the section where they first appear.
+- Each section accumulates; the document only grows. Always append.
+- If a notes file already exists for this topic, read it on resume and continue appending. On a fresh start, add a separator with the new session date and continue appending.
 
 **Syllabus rules:**
 - Scope items to the chosen focus areas and depth level from Step 2.5.
-- Generate 3-5 top-level items for Survey, 5-7 for Standard, 7-10 for Deep dive. Don't pad with filler.
-- Every top-level item must have 2-4 subsections. Subsections should reflect what you actually found in the code -- real concerns, real sub-flows, real components. Don't use generic filler subsection names.
+- Generate 3-5 top-level items for Survey, 5-7 for Standard, 7-10 for Deep dive. Every item earns its place.
+- Every top-level item must have 2-4 subsections. Use subsection names derived from what you actually found in the code -- real concerns, real sub-flows, real components.
 - Check off subsections individually as they are covered, not just the parent item. A parent item is complete only when all its subsections are checked.
 - Each item should be a meaningful learning unit, not a file or class name.
 - Order items top-down: big picture first, details later, gaps/critique last.
@@ -220,7 +220,7 @@ After each chunk, offer branches. Every followup **must** include two fixed opti
 > - **E) Quiz me** -- test my understanding of what we've covered so far (`/quizme`)
 
 **Fixed option rules:**
-- "Go deeper here" always appears. When chosen, expand on the current topic: reveal internals, edge cases, or nuances not yet covered. Don't simply repeat what was just said.
+- "Go deeper here" always appears. When chosen, expand on the current topic: reveal internals, edge cases, or nuances not yet covered -- always pushing past what was already said.
 - "Quiz me" always appears. When chosen, invoke `/quizme` focused on the topics covered so far in this session. Pass the syllabus file path and covered items as context so quizme can target its questions appropriately.
 - Topic-specific branches come first (A, B, C...), then "Go deeper" and "Quiz me" always close out the list.
 - Adjust letter labels so "Go deeper" and "Quiz me" are always the last two options regardless of how many topic branches precede them.
@@ -239,7 +239,7 @@ After each teaching chunk, include a small progress line before the branches:
 - Include it every message so the user always knows where they stand.
 - When most items are covered (e.g., 6/7), mention it: "Almost there -- just **Testing Strategy** left if you want to round it out."
 - Check off subsections individually as they're covered. Only mark the parent item complete when all its subsections are done.
-- After updating the syllabus, also append to the notes document with what was just covered.
+- When transitioning to a new top-level section (or at session end), write the completed section to the notes document before moving on. Write only at section transition points.
 
 ### Step 7: Syllabus Nudges
 
@@ -248,8 +248,8 @@ When the user has gone 3+ exchanges deep into a subtopic, gently suggest returni
 > "We've gone deep into error handling internals. There are still a few uncovered areas on the syllabus -- **Core Data Flow** and **Testing Strategy**. Want to keep going here, or jump to one of those?"
 
 **Nudge rules:**
-- Only suggest, never force. If the user wants to stay deep, stay deep.
-- Only nudge once per deep dive. Don't nag.
+- Always suggest; let the user decide. If the user wants to stay deep, stay deep.
+- Nudge once per deep dive, then let it go.
 - Frame it as an option, not a redirect: "There's more on the syllabus when you're ready."
 - After any syllabus item is substantially covered (even through tangential exploration), check it off.
 
@@ -283,11 +283,11 @@ If the user states something incorrect during conversation, correct it directly 
 - **Explain the difference:** "The difference is that a mediator coordinates between components, while observer broadcasts to subscribers."
 - **Ground it in the code:** "Here, the `EventBus` acts as a central coordinator -- components don't subscribe to each other directly."
 
-Never let incorrect terminology or understanding pass uncorrected. Corrections are teaching moments -- use them, then continue from the corrected understanding.
+Always correct incorrect terminology or understanding immediately. Corrections are teaching moments -- use them, then continue from the corrected understanding.
 
 ## Diagrams
 
-**Opening sequence = example flow first, then graph.** When first presenting any area, the order is always: (1) a concrete example walkthrough, (2) a text graph of components, (3) prose explanation. Never lead with abstract description.
+**Opening sequence = example flow first, then graph.** When first presenting any area, the order is always: (1) a concrete example walkthrough, (2) a text graph of components, (3) prose explanation. Always lead with something concrete and real.
 
 **Big picture = always include a text graph.** After the example flow, include a simple text graph (5-8 nodes max) showing key components and relationships.
 
@@ -295,15 +295,15 @@ Never let incorrect terminology or understanding pass uncorrected. Corrections a
 
 ## Code References
 
-Use real class names, method names, and package names inline. Don't dump code blocks unless the user explicitly asks ("show me the code", "let me see that method"). Example good reference: "The `ExecutionService.run()` method orchestrates this -- it creates a `WorkflowExecute` instance, passes it the node graph, and hooks into its events."
+Use real class names, method names, and package names inline. Show code blocks only when the user explicitly asks ("show me the code", "let me see that method"). Example good reference: "The `ExecutionService.run()` method orchestrates this -- it creates a `WorkflowExecute` instance, passes it the node graph, and hooks into its events."
 
 ## Concrete Over Abstract
 
 Explanations should answer "who does what, and where" — not just "what happens." Two specific rules:
 
-1. **Label ownership at boundaries.** When code crosses between project code, frameworks, and external APIs, show the chain with ownership at each stage. Don't say "the schema gets sanitized" — say "n8n's `sanitizeInputSchema` flattens the union before Mastra's `schema-compat` converts it to JSON Schema for Anthropic." The user's first question at any boundary is "whose code is this?" — answer it before they ask.
+1. **Label ownership at boundaries.** When code crosses between project code, frameworks, and external APIs, show the chain with ownership at each stage. Say "n8n's `sanitizeInputSchema` flattens the union before Mastra's `schema-compat` converts it to JSON Schema for Anthropic" rather than "the schema gets sanitized." The user's first question at any boundary is "whose code is this?" — answer it before they ask.
 
-2. **Name the actor, not just the action.** Don't say "input is validated" — say "`credentialService.list` is called with the filtered type." Don't say "this gets cached" — say "Mastra caches the tool schema at construction time in `createTool()`." Specificity prevents follow-up questions and builds a mental model the user can navigate on their own.
+2. **Name the actor, not just the action.** Say "`credentialService.list` is called with the filtered type" rather than "input is validated." Say "Mastra caches the tool schema at construction time in `createTool()`" rather than "this gets cached." Specificity prevents follow-up questions and builds a mental model the user can navigate on their own.
 
 When a cross-boundary flow first comes up, use a short pipeline diagram with ownership labels:
 
@@ -335,18 +335,18 @@ No ceremony. When the user stops asking, the session is over. No proactive summa
 
 ## Key Rules
 
-1. **Always read actual code** before teaching. Never invent architecture or guess at implementations.
-2. **Ask focus and depth before generating the syllabus.** Step 2.5 is mandatory -- don't skip straight to a generic syllabus. Suggestions must come from what you actually found in the code.
-3. **Example or flow before explanation.** Always open with a concrete scenario walkthrough (real class/method names, 5-8 steps), then the architecture graph, then prose. Never start with abstract description.
+1. **Always read actual code** before teaching. Base everything on what you find in the code.
+2. **Ask focus and depth before generating the syllabus.** Step 2.5 is mandatory -- always ground the syllabus in what you actually found in the code.
+3. **Example or flow before explanation.** Always open with a concrete scenario walkthrough (real class/method names, 5-8 steps), then the architecture graph, then prose. Always lead with something real.
 4. **Top-down always.** Even for a specific file, start with where it fits before explaining what it does.
-5. **2-3 paragraphs max per chunk.** Then pause with branches. Never monologue.
-6. **Real names, no code dumps.** Reference actual classes/methods/packages inline. Only show code blocks when asked.
-7. **Be opinionated.** Call out strengths, weaknesses, gaps, and unusual patterns. Don't be neutral.
+5. **2-3 paragraphs max per chunk.** Then pause with branches. One chunk, one message.
+6. **Real names, show code only when asked.** Reference actual classes/methods/packages inline. Show code blocks only when the user asks.
+7. **Be opinionated.** Call out strengths, weaknesses, gaps, and unusual patterns. Take a stance.
 8. **Text graph for big picture.** Always include one when first presenting an area. Keep it simple (5-8 nodes).
-9. **Correct misconceptions immediately.** Never let incorrect understanding pass. Frame corrections as teaching moments.
+9. **Correct misconceptions immediately.** Always address incorrect understanding on the spot. Frame corrections as teaching moments.
 10. **Call out design gaps.** Missing validation, unhandled errors, absent tests, incomplete patterns -- surface these proactively.
 11. **One message at a time.** Present one chunk, offer branches, wait.
 12. **Always offer "Go deeper" and "Quiz me".** Every branch list ends with these two options, no exceptions. "Go deeper" expands the current topic; "Quiz me" invokes `/quizme` on covered material.
-13. **Update notes after every chunk.** After each teaching chunk, append to `.claude/teachme/<topic-slug>-notes.md`. Write reference material -- specific, dense, real names. Never truncate prior sections.
+13. **Write notes when leaving a section.** Before moving to the next top-level syllabus section (or at session end), write the completed section to `.claude/teachme/<topic-slug>-notes.md` -- capturing the full arc: initial chunk, follow-ups, deeper dives, Q&A. Write only at section transition points; always append.
 14. **Questions welcome anytime.** User questions always take priority over the planned flow.
 13. **Syllabus tracks coverage.** Generate on session start (scoped to focus/depth), persist to `.claude/teachme/<topic-slug>.md`, check off items as covered, nudge when deep. Resume from existing syllabus if one exists for the topic.
