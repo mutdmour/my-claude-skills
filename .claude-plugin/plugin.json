@@ -1,0 +1,20 @@
+{
+  "name": "mutasem",
+  "version": "1.0.0",
+  "description": "Interactive skills for learning and quizzing on codebase architecture.",
+  "author": {
+    "name": "Mutasem",
+    "url": "https://github.com/mutdmour"
+  },
+  "homepage": "https://github.com/mutdmour/my-claude-skills",
+  "repository": "https://github.com/mutdmour/my-claude-skills",
+  "license": "MIT",
+  "keywords": [
+    "learning",
+    "teaching",
+    "quiz",
+    "architecture",
+    "codebase",
+    "education"
+  ]
+}

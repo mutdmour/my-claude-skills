@@ -1,0 +1,31 @@
+{
+  "name": "mutasem",
+  "owner": {
+    "name": "Mutasem",
+    "url": "https://github.com/mutdmour"
+  },
+  "metadata": {
+    "description": "Interactive skills for learning and quizzing on codebase architecture.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "mutasem",
+      "description": "Interactive skills for learning and quizzing on codebase architecture. Includes teachme (guided walkthroughs) and quizme (interactive Q&A).",
+      "author": {
+        "name": "Mutasem",
+        "url": "https://github.com/mutdmour"
+      },
+      "homepage": "https://github.com/mutdmour/my-claude-skills",
+      "tags": [
+        "learning",
+        "teaching",
+        "quiz",
+        "architecture",
+        "codebase",
+        "education"
+      ],
+      "source": "."
+    }
+  ]
+}
