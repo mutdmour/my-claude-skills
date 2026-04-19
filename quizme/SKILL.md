@@ -76,15 +76,15 @@ Read relevant packages, services, and key files to understand:
 
 **Important:** You are building questions about architecture, not about files. Read code to ensure accuracy, but quiz on concepts.
 
-### Step 2.5: Ask Focus Areas and Difficulty
+### Step 2.5: Ask Focus Areas, Difficulty, and Abstraction Level
 
-After reading the code, before generating the quiz plan, ask what areas the user wants to be tested on and at what difficulty. Present this as a single combined question.
+After reading the code, before generating the quiz plan, ask what areas the user wants to be tested on, at what difficulty, and at what level of abstraction. Present this as a single combined question.
 
 Based on your code reading, surface 4-6 meaningful focus area suggestions specific to the topic -- real areas from the actual code, not generic categories.
 
 Example prompt (adapt to the actual topic):
 
-> Before I build your quiz, two quick questions:
+> Before I build your quiz, three quick questions:
 >
 > **What areas do you want to be tested on?** (pick one or more, or say "all")
 > - **A) Component boundaries** -- what each piece owns and where responsibilities split
@@ -97,6 +97,11 @@ Example prompt (adapt to the actual topic):
 > - **1) Broad strokes** -- key concepts and terminology, no internals
 > - **2) Standard** -- patterns, data flow, component interactions
 > - **3) Rigorous** -- edge cases, design gaps, nuanced interactions, "why" questions
+>
+> **How code-specific should questions and explanations be?**
+> - **I) Conceptual** -- concepts, responsibilities, and flows only; no class/function/file names
+> - **II) Named** -- use and expect real class, service, and method names (no file paths or line numbers)
+> - **III) Code-level** -- reference specific methods and implementation details; show code in explanations when it adds clarity
 
 Wait for the user's response before generating the quiz plan.
 
@@ -105,10 +110,13 @@ Wait for the user's response before generating the quiz plan.
 - **Broad strokes:** 4-6 areas, questions focus on naming and identifying components. Multiple choice preferred. No gotchas.
 - **Standard:** 5-8 areas, mix of multiple choice and free-write. Covers main patterns and flows.
 - **Rigorous:** 6-10 areas, heavier on free-write. Include edge cases, "what happens when X fails", design trade-offs, and gaps in the implementation.
+- **Conceptual abstraction:** Questions and explanations use only concepts, responsibilities, and patterns -- no specific class, method, or file names. Good for testing architectural thinking.
+- **Named abstraction:** Questions use and expect real class/service/method names. Correct terminology matters; wrong names get corrected. No file paths or line numbers.
+- **Code-level abstraction:** Questions may reference specific methods or implementation details. Explanations for wrong answers may include code snippets when they clarify the concept.
 
 ### Step 3: Generate Quiz Plan
 
-After reading the code, generate a quiz plan covering all key areas of the topic. Write it to `.claude/quizme/<topic-slug>.md` (e.g., `.claude/quizme/execution-engine.md`). Derive the slug from the topic name -- lowercase, hyphens, no special characters. The plan ensures comprehensive coverage and lets the user resume across sessions.
+After reading the code, generate a quiz plan covering all key areas of the topic. Write it to `~/.claude/quizme/<topic-slug>.md` (e.g., `~/.claude/quizme/execution-engine.md`). Derive the slug from the topic name -- lowercase, hyphens, no special characters. The plan ensures comprehensive coverage and lets the user resume across sessions.
 
 **Plan format:**
 
@@ -117,6 +125,7 @@ After reading the code, generate a quiz plan covering all key areas of the topic
 Started: [date]
 Focus: [chosen areas, e.g. "Data Flow, Error Handling" or "All"]
 Difficulty: [Broad strokes / Standard / Rigorous]
+Abstraction: [Conceptual / Named / Code-level]
 
 ## Areas to Cover
 
@@ -138,8 +147,8 @@ Difficulty: [Broad strokes / Standard / Rigorous]
 - Generate 4-6 areas for Broad strokes, 5-8 for Standard, 6-10 for Rigorous. Don't pad with filler.
 - Each area should map to a meaningful concept cluster, not a file.
 - Check off areas once 2+ questions in that area have been answered.
-- If a plan already exists for this topic (check `.claude/quizme/` for matching slug), read it and resume. Ask: "We have an existing quiz on **X** (focus: [X], difficulty: [Y]) -- want to continue where you left off, or start fresh with different focus/difficulty?"
-- On first invocation, list any existing sessions in `.claude/quizme/` so the user knows what's available.
+- If a plan already exists for this topic (check `~/.claude/quizme/` for matching slug), read it and resume. Ask: "We have an existing quiz on **X** (focus: [X], difficulty: [Y]) -- want to continue where you left off, or start fresh with different focus/difficulty?"
+- On first invocation, list any existing sessions in `~/.claude/quizme/` so the user knows what's available.
 
 ### Step 4: Ask Questions
 
@@ -215,16 +224,17 @@ Produce a scorecard grouped by concept area:
 - Note which plan areas were covered and which remain
 - End with a one-line overall assessment
 
-The quiz plan persists at `.claude/quizme/<topic-slug>.md` with progress marked -- the user can resume in a future conversation by invoking `/quizme` on the same topic.
+The quiz plan persists at `~/.claude/quizme/<topic-slug>.md` with progress marked -- the user can resume in a future conversation by invoking `/quizme` on the same topic.
 
 ## Key Rules
 
 - **One question per message.** Never batch questions.
 - **Always read actual code** before asking questions. Don't invent architecture.
-- **Ask focus areas and difficulty before generating the plan.** Step 2.5 is mandatory -- don't skip to a generic quiz. Suggestions must come from what you actually found in the code.
+- **Ask focus areas, difficulty, and abstraction level before generating the plan.** Step 2.5 is mandatory -- don't skip to a generic quiz. Suggestions must come from what you actually found in the code.
 - **Scope questions to the chosen focus areas.** Don't ask about areas the user didn't select unless they said "all".
 - **Match question style to difficulty.** Broad strokes = multiple choice on terminology; Rigorous = free-write on edge cases and design gaps.
-- **Care about terminology.** If the user says "handler" when they mean "controller", correct it.
+- **Match code detail to chosen abstraction level.** Conceptual = no specific names in questions or explanations; Named = use and expect real class/method/service names, correct wrong terminology; Code-level = reference methods and show snippets in explanations when they clarify.
+- **Care about terminology at Named and Code-level.** If the user says "handler" when they mean "controller", correct it. At Conceptual level, focus on whether the concept is right, not the name.
 - **Free-write questions should require articulation**, not just yes/no recall.
 - **Reinforcement follow-ups are mandatory** after wrong answers. Don't skip them.
 - **Never quiz on file paths or line numbers.** Architecture, patterns, data flow, and terminology only.

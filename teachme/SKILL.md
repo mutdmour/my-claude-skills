@@ -68,15 +68,15 @@ Read relevant packages, services, dependencies, and callers. For PRs, also fetch
 - Design patterns in use
 - Gaps in the design (missing validation, error handling, tests, etc.)
 
-### Step 2.5: Ask Focus Areas and Depth
+### Step 2.5: Ask Focus Areas, Depth, and Abstraction Level
 
-After reading the code, before generating the syllabus, ask the user what they want to focus on and how deep they want to go. Present this as a single combined question.
+After reading the code, before generating the syllabus, ask the user what they want to focus on, how deep they want to go, and how code-specific explanations should be. Present this as a single combined question.
 
 Based on your code reading, surface 4-6 meaningful focus area suggestions specific to the topic -- not generic categories, but real areas you found in the code.
 
 Example prompt (adapt to the actual topic):
 
-> Before I build your syllabus, two quick questions:
+> Before I build your syllabus, three quick questions:
 >
 > **What areas do you want to focus on?** (pick one or more, or say "all")
 > - **A) Core execution flow** -- how workflows run end-to-end
@@ -89,6 +89,11 @@ Example prompt (adapt to the actual topic):
 > - **1) Survey** -- big picture only, key concepts, how it fits in (~15 min)
 > - **2) Standard** -- balanced breadth and depth, main patterns and flows
 > - **3) Deep dive** -- internals, edge cases, design gaps, full coverage
+>
+> **How code-specific should explanations be?**
+> - **I) Conceptual** -- concepts, responsibilities, and flows only; no class/function/file names
+> - **II) Named** -- use real class, service, method, and package names inline (no code blocks unless asked)
+> - **III) Code-level** -- real names plus proactive code snippets when they add clarity
 
 Wait for the user's response before generating the syllabus.
 
@@ -97,12 +102,15 @@ Wait for the user's response before generating the syllabus.
 - **Survey depth:** 3-5 high-level items. Each broad. Cover only high-level concepts; include internals and gaps/critique only when explicitly chosen.
 - **Standard depth:** 5-7 items. Mix of overview and key patterns. Include one gap/critique item if relevant.
 - **Deep dive depth:** 7-10 items. Include internals, edge cases, design gaps, and testing strategy. Nothing skipped.
+- **Conceptual abstraction:** Describe responsibilities, flows, and patterns without naming specific classes, methods, or files. Good for architectural understanding without code navigation.
+- **Named abstraction:** Reference real class/method/package names inline throughout. Show code blocks only when the user explicitly asks. (Default behavior.)
+- **Code-level abstraction:** Use real names and proactively include relevant code snippets when they make an explanation clearer -- don't wait for the user to ask.
 
 ### Step 3: Generate Syllabus
 
-After reading the code, generate a syllabus covering all key parts of the topic. Write it to `.claude/teachme/<topic-slug>.md` (e.g., `.claude/teachme/execution-engine.md`). Derive the slug from the topic name -- lowercase, hyphens, no special characters. The syllabus serves two purposes: ensuring comprehensive coverage, and letting the user resume across sessions.
+After reading the code, generate a syllabus covering all key parts of the topic. Write it to `~/.claude/teachme/<topic-slug>.md` (e.g., `~/.claude/teachme/execution-engine.md`). Derive the slug from the topic name -- lowercase, hyphens, no special characters. The syllabus serves two purposes: ensuring comprehensive coverage, and letting the user resume across sessions.
 
-Also create a companion notes document at `.claude/teachme/<topic-slug>-notes.md`. This is a running knowledge base that accumulates everything taught across the session -- updated after every teaching chunk, not just at the end.
+Also create a companion notes document at `~/.claude/teachme/<topic-slug>-notes.md`. This is a running knowledge base that accumulates everything taught across the session -- updated after every teaching chunk, not just at the end.
 
 **Syllabus format:**
 
@@ -111,6 +119,7 @@ Also create a companion notes document at `.claude/teachme/<topic-slug>-notes.md
 Started: [date]
 Focus: [chosen areas, e.g. "Core execution flow, Error handling" or "All"]
 Depth: [Survey / Standard / Deep dive]
+Abstraction: [Conceptual / Named / Code-level]
 
 ## Syllabus
 
@@ -140,13 +149,14 @@ Depth: [Survey / Standard / Deep dive]
 <!-- Updated as topics are covered -->
 ```
 
-**Notes document format** (`.claude/teachme/<topic-slug>-notes.md`):
+**Notes document format** (`~/.claude/teachme/<topic-slug>-notes.md`):
 
 ```markdown
 # TeachMe Notes: [Topic Name]
 Started: [date]
 Focus: [chosen areas]
 Depth: [Survey / Standard / Deep dive]
+Abstraction: [Conceptual / Named / Code-level]
 
 ---
 
@@ -181,8 +191,8 @@ Depth: [Survey / Standard / Deep dive]
 - Each item should be a meaningful learning unit, not a file or class name.
 - Order items top-down: big picture first, details later, gaps/critique last.
 - Check off items as they are covered during the session. Add brief notes about what was discussed.
-- If a syllabus already exists for this topic (check `.claude/teachme/` for matching slug), read it and resume from where the user left off. Ask: "We have an existing session on **X** (focus: [X], depth: [Y]) -- want to continue where you left off, or start fresh with different focus/depth?"
-- On first invocation, list any existing sessions in `.claude/teachme/` so the user knows what's available.
+- If a syllabus already exists for this topic (check `~/.claude/teachme/` for matching slug), read it and resume from where the user left off. Ask: "We have an existing session on **X** (focus: [X], depth: [Y]) -- want to continue where you left off, or start fresh with different focus/depth?"
+- On first invocation, list any existing sessions in `~/.claude/teachme/` so the user knows what's available.
 
 ### Step 4: Present Big Picture
 
@@ -331,22 +341,22 @@ User questions and redirects always take priority over any planned flow.
 
 ## Session End
 
-No ceremony. When the user stops asking, the session is over. No proactive summary, no scorecard. The syllabus file persists at `.claude/teachme/<topic-slug>.md` with progress marked -- the user can resume in a future conversation by invoking `/teachme` on the same topic.
+No ceremony. When the user stops asking, the session is over. No proactive summary, no scorecard. The syllabus file persists at `~/.claude/teachme/<topic-slug>.md` with progress marked -- the user can resume in a future conversation by invoking `/teachme` on the same topic.
 
 ## Key Rules
 
 1. **Always read actual code** before teaching. Base everything on what you find in the code.
-2. **Ask focus and depth before generating the syllabus.** Step 2.5 is mandatory -- always ground the syllabus in what you actually found in the code.
+2. **Ask focus, depth, and abstraction level before generating the syllabus.** Step 2.5 is mandatory -- always ground the syllabus in what you actually found in the code.
 3. **Example or flow before explanation.** Always open with a concrete scenario walkthrough (real class/method names, 5-8 steps), then the architecture graph, then prose. Always lead with something real.
 4. **Top-down always.** Even for a specific file, start with where it fits before explaining what it does.
 5. **2-3 paragraphs max per chunk.** Then pause with branches. One chunk, one message.
-6. **Real names, show code only when asked.** Reference actual classes/methods/packages inline. Show code blocks only when the user asks.
+6. **Match code detail to chosen abstraction level.** Conceptual = no specific names; Named = real class/method/package names inline, code blocks only when asked; Code-level = real names plus proactive snippets when they add clarity.
 7. **Be opinionated.** Call out strengths, weaknesses, gaps, and unusual patterns. Take a stance.
 8. **Text graph for big picture.** Always include one when first presenting an area. Keep it simple (5-8 nodes).
 9. **Correct misconceptions immediately.** Always address incorrect understanding on the spot. Frame corrections as teaching moments.
 10. **Call out design gaps.** Missing validation, unhandled errors, absent tests, incomplete patterns -- surface these proactively.
 11. **One message at a time.** Present one chunk, offer branches, wait.
 12. **Always offer "Go deeper" and "Quiz me".** Every branch list ends with these two options, no exceptions. "Go deeper" expands the current topic; "Quiz me" invokes `/quizme` on covered material.
-13. **Write notes when leaving a section.** Before moving to the next top-level syllabus section (or at session end), write the completed section to `.claude/teachme/<topic-slug>-notes.md` -- capturing the full arc: initial chunk, follow-ups, deeper dives, Q&A. Write only at section transition points; always append.
+13. **Write notes when leaving a section.** Before moving to the next top-level syllabus section (or at session end), write the completed section to `~/.claude/teachme/<topic-slug>-notes.md` -- capturing the full arc: initial chunk, follow-ups, deeper dives, Q&A. Write only at section transition points; always append.
 14. **Questions welcome anytime.** User questions always take priority over the planned flow.
-13. **Syllabus tracks coverage.** Generate on session start (scoped to focus/depth), persist to `.claude/teachme/<topic-slug>.md`, check off items as covered, nudge when deep. Resume from existing syllabus if one exists for the topic.
+13. **Syllabus tracks coverage.** Generate on session start (scoped to focus/depth), persist to `~/.claude/teachme/<topic-slug>.md`, check off items as covered, nudge when deep. Resume from existing syllabus if one exists for the topic.
