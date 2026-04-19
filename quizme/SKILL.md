@@ -7,7 +7,7 @@ description: Use when the user wants to test their understanding of codebase arc
 
 ## Overview
 
-Quiz the user on codebase architecture through interactive Q&A. Infer topic from current context or accept an explicit topic. Ask a mix of multiple-choice and free-write questions grounded in actual code. Act as a helpful guide -- when the user gets something wrong, explain why, teach the correct answer, and reinforce with a follow-up.
+Quiz the user on codebase architecture through interactive Q&A. Infer topic from current context or accept an explicit topic. Ask questions grounded in actual code, using the format the user prefers (multiple choice, free-write, or mixed). Act as a helpful guide -- when the user gets something wrong, explain why, teach the correct answer, and reinforce with a follow-up.
 
 ## Invocation
 
@@ -76,15 +76,15 @@ Read relevant packages, services, and key files to understand:
 
 **Important:** You are building questions about architecture, not about files. Read code to ensure accuracy, but quiz on concepts.
 
-### Step 2.5: Ask Focus Areas, Difficulty, and Abstraction Level
+### Step 2.5: Ask Focus Areas, Difficulty, Abstraction Level, and Question Format
 
-After reading the code, before generating the quiz plan, ask what areas the user wants to be tested on, at what difficulty, and at what level of abstraction. Present this as a single combined question.
+After reading the code, before generating the quiz plan, ask what areas the user wants to be tested on, at what difficulty, at what level of abstraction, and in what question format. Present this as a single combined question.
 
 Based on your code reading, surface 4-6 meaningful focus area suggestions specific to the topic -- real areas from the actual code, not generic categories.
 
 Example prompt (adapt to the actual topic):
 
-> Before I build your quiz, three quick questions:
+> Before I build your quiz, a few quick questions:
 >
 > **What areas do you want to be tested on?** (pick one or more, or say "all")
 > - **A) Component boundaries** -- what each piece owns and where responsibilities split
@@ -102,6 +102,13 @@ Example prompt (adapt to the actual topic):
 > - **I) Conceptual** -- concepts, responsibilities, and flows only; no class/function/file names
 > - **II) Named** -- use and expect real class, service, and method names (no file paths or line numbers)
 > - **III) Code-level** -- reference specific methods and implementation details; show code in explanations when it adds clarity
+>
+> **What question format do you prefer?**
+> - **MC) Multiple choice only** -- pick from options; good for terminology and pattern recognition
+> - **FW) Free-write only** -- explain in your own words; good for testing deeper understanding
+> - **OD) Ordering** -- put steps or components in the correct sequence; good for data flow and pipelines
+> - **SC) Scenario** -- reason through a failure or edge case ("what happens when X fails?"); good for resilience and deep understanding
+> - **MX) Mixed** *(default)* -- combines all formats based on what best fits each concept
 
 Wait for the user's response before generating the quiz plan.
 
@@ -113,6 +120,11 @@ Wait for the user's response before generating the quiz plan.
 - **Conceptual abstraction:** Questions and explanations use only concepts, responsibilities, and patterns -- no specific class, method, or file names. Good for testing architectural thinking.
 - **Named abstraction:** Questions use and expect real class/service/method names. Correct terminology matters; wrong names get corrected. No file paths or line numbers.
 - **Code-level abstraction:** Questions may reference specific methods or implementation details. Explanations for wrong answers may include code snippets when they clarify the concept.
+- **Multiple choice only:** Every question uses multiple choice format with 3-4 plausible options.
+- **Free-write only:** Every question asks the user to explain, describe, or reason in their own words.
+- **Ordering only:** Every question presents a shuffled list of steps or components the user must sequence correctly.
+- **Scenario only:** Every question presents a failure or edge-case situation and asks what happens next.
+- **Mixed (default):** Combine all formats based on what best tests each concept -- MC for terminology, ordering for flows, scenario for resilience, free-write for architecture/reasoning.
 
 ### Step 3: Generate Quiz Plan
 
@@ -126,6 +138,7 @@ Started: [date]
 Focus: [chosen areas, e.g. "Data Flow, Error Handling" or "All"]
 Difficulty: [Broad strokes / Standard / Rigorous]
 Abstraction: [Conceptual / Named / Code-level]
+Format: [Multiple choice / Free-write / Mixed]
 
 ## Areas to Cover
 
@@ -156,13 +169,21 @@ Alternate between two question types:
 
 **Multiple choice** -- for terminology and concept identification:
 - "What design pattern does the execution engine use for node processing?"
-- "Which package is responsible for defining shared API contracts between frontend and backend?"
 - Use 3-4 options. Make distractors plausible but distinguishable.
 
 **Free-write** -- for architectural understanding:
 - "In your own words, how does a workflow execution get triggered and flow through the system?"
-- "What is the role of the event bus in this architecture?"
 - Expect the user to use correct terminology. If they use wrong terms, correct them gently.
+
+**Ordering** -- for data flow and pipelines:
+- "Put these steps in the correct order: [shuffled list of 4-6 steps]"
+- Use for request lifecycles, execution pipelines, event propagation sequences.
+- Accept loose correct answers; focus on whether they understand the sequence, not exact wording.
+
+**Scenario** -- for resilience and edge cases:
+- "The queue worker crashes mid-execution -- what happens to the in-flight job and why?"
+- Use for error handling, failure modes, and "what happens when X" questions.
+- Best reserved for Standard/Rigorous difficulty. Evaluate whether the user identifies the failure boundary and recovery path.
 
 **Question principles:**
 - Target component relationships, data flow, design patterns, layer responsibilities
@@ -230,9 +251,9 @@ The quiz plan persists at `~/.claude/quizme/<topic-slug>.md` with progress marke
 
 - **One question per message.** Never batch questions.
 - **Always read actual code** before asking questions. Don't invent architecture.
-- **Ask focus areas, difficulty, and abstraction level before generating the plan.** Step 2.5 is mandatory -- don't skip to a generic quiz. Suggestions must come from what you actually found in the code.
+- **Ask focus areas, difficulty, abstraction level, and question format before generating the plan.** Step 2.5 is mandatory -- don't skip to a generic quiz. Suggestions must come from what you actually found in the code.
 - **Scope questions to the chosen focus areas.** Don't ask about areas the user didn't select unless they said "all".
-- **Match question style to difficulty.** Broad strokes = multiple choice on terminology; Rigorous = free-write on edge cases and design gaps.
+- **Respect the chosen question format.** If the user picked a single format (MC, FW, OD, SC), use only that type. In Mixed mode, let the concept guide the choice -- MC for terminology, ordering for flows/pipelines, scenario for failure modes, free-write for architecture and reasoning. Broad strokes leans MC; rigorous leans scenario and free-write.
 - **Match code detail to chosen abstraction level.** Conceptual = no specific names in questions or explanations; Named = use and expect real class/method/service names, correct wrong terminology; Code-level = reference methods and show snippets in explanations when they clarify.
 - **Care about terminology at Named and Code-level.** If the user says "handler" when they mean "controller", correct it. At Conceptual level, focus on whether the concept is right, not the name.
 - **Free-write questions should require articulation**, not just yes/no recall.
