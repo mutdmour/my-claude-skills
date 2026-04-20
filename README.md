@@ -4,8 +4,11 @@ Personal Claude Code plugin with interactive skills for learning and quizzing on
 
 ## Install
 
-```bash
-claude /plugin install github:mutdmour/my-claude-skills
+In Claude Code, run:
+
+```
+/plugin marketplace add mutdmour/my-claude-skills
+/plugin install mutasem@mutasem
 ```
 
 Skills are then available as `/mutasem:teachme` and `/mutasem:quizme`.
