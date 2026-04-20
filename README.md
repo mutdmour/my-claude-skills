@@ -7,7 +7,7 @@ Personal Claude Code plugin with interactive skills for learning and quizzing on
 In Claude Code, run:
 
 ```
-/plugin marketplace add mutdmour/my-claude-skills
+/plugin marketplace add mutdmour/codekit
 /plugin install codekit@mutasem
 ```
 
