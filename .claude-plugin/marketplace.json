@@ -10,7 +10,7 @@
   },
   "plugins": [
     {
-      "name": "mutasem",
+      "name": "codekit",
       "description": "Interactive skills for learning and quizzing on codebase architecture. Includes teachme (guided walkthroughs) and quizme (interactive Q&A).",
       "author": {
         "name": "Mutasem",
