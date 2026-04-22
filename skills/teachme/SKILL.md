@@ -203,7 +203,23 @@ Abstraction: [Conceptual / Named / Code-level]
 
 Always start top-down, regardless of input type. Present in this order:
 
-1. **A concrete example or flow first.** Before any abstract description, ground the user in something real. Pick the most representative scenario for this area (e.g., "what happens when a webhook fires", "what a full workflow execution looks like end to end") and walk through it as a short linear flow -- who calls what, in what order, with real class/method names. Keep it to 5-8 steps. This is not a diagram yet; it's a narrative trace.
+1. **Core data structure first (if data is central).** When the topic revolves around data -- schemas, models, state shape, API payloads, persisted entities, message formats -- lead with the data structure before anything else. The user needs the vocabulary to follow the flow. Show the key fields, types, and relationships (the 5-15 most important ones, not every field). Use a schema block, type definition, or annotated entity sketch. Call out which fields are the "load-bearing" ones that the rest of the system keys off of.
+
+   Example format:
+   ```
+   Execution {
+     id: string             // primary key, referenced everywhere
+     workflowId: string     // FK → Workflow
+     status: 'new' | 'running' | 'success' | 'error' | 'waiting'
+     mode: 'trigger' | 'manual' | 'retry' | 'webhook'
+     data: IRunExecutionData  // the node-by-node execution state (see §3)
+     startedAt / stoppedAt
+   }
+   ```
+
+   Skip this step if the topic is not data-centric (e.g., a pure algorithm, a CLI flow, a rendering pipeline). When in doubt, include it -- most codebase areas have a central data shape worth anchoring on.
+
+2. **A concrete example or flow.** Ground the user in something real. Pick the most representative scenario for this area (e.g., "what happens when a webhook fires", "what a full workflow execution looks like end to end") and walk through it as a short linear flow -- who calls what, in what order, with real class/method names. Keep it to 5-8 steps. This is not a diagram yet; it's a narrative trace.
 
    Example format:
    ```
@@ -215,11 +231,11 @@ Always start top-down, regardless of input type. Present in this order:
    6. Results written back, webhook response returned
    ```
 
-2. **A text graph** showing key components and their relationships (5-8 nodes max). This anchors the structural mental model after the user has seen the flow.
+3. **A text graph** showing key components and their relationships (5-8 nodes max). This anchors the structural mental model after the user has seen the data and the flow.
 
-3. **1-2 paragraphs** explaining what this area is, where it fits, and its key responsibilities. Keep it brief -- the flow and graph already did the heavy lifting.
+4. **1-2 paragraphs** explaining what this area is, where it fits, and its key responsibilities. Keep it brief -- the schema, flow, and graph already did the heavy lifting.
 
-4. **Opinionated observations** -- call out what's notable right away (strengths, gaps, unusual patterns).
+5. **Opinionated observations** -- call out what's notable right away (strengths, gaps, unusual patterns).
 
 Check off the "Big Picture" syllabus item. Then offer 2-4 branches to explore deeper.
 
@@ -302,7 +318,7 @@ Always correct incorrect terminology or understanding immediately. Corrections a
 
 ## Diagrams
 
-**Opening sequence = example flow, then graph, then prose.** When first presenting any area, the order is always: (1) a concrete example walkthrough, (2) a text graph of components, (3) prose explanation. Always lead with something concrete and visual.
+**Opening sequence = data structure (if central), then example flow, then graph, then prose.** When first presenting any area, the order is: (1) core data structure if the topic is data-centric, (2) a concrete example walkthrough, (3) a text graph of components, (4) prose explanation. Always lead with something concrete and visual -- and when data is load-bearing, that means the schema goes first so the user has the vocabulary for everything after.
 
 **Big picture = always include a text graph.** After the example flow, include a simple text graph (5-8 nodes max) showing key components and relationships.
 
@@ -352,7 +368,7 @@ No ceremony. When the user stops asking, the session is over. No proactive summa
 
 1. **Always read actual code** before teaching. Base everything on what you find in the code.
 2. **Ask focus, depth, abstraction level, and notes preference before generating the syllabus.** Step 2.5 is mandatory -- always ground the syllabus in what you actually found in the code.
-3. **Example or flow before explanation.** Always open with a concrete scenario walkthrough (real class/method names, 5-8 steps), then the architecture graph, then prose. Always lead with something real.
+3. **Data structure first when data is central, then example or flow, then explanation.** For data-centric topics (schemas, models, state shape, persisted entities, message formats), lead the big picture with the core data structure -- key fields, types, relationships -- so the user has the vocabulary for everything that follows. Then the concrete scenario walkthrough (real class/method names, 5-8 steps), then the architecture graph, then prose. Skip the schema step only when the topic truly has no central data shape.
 4. **Top-down always.** Even for a specific file, start with where it fits before explaining what it does.
 5. **2-3 paragraphs max per chunk.** Then pause with branches. One chunk, one message.
 6. **Match code detail to chosen abstraction level.** Conceptual = no specific names; Named = real class/method/package names inline, code blocks only when asked; Code-level = real names plus proactive snippets when they add clarity.
